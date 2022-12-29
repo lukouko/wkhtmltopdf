@@ -57,8 +57,6 @@ public:
 	MyNetworkAccessManager(const settings::LoadPage & s);
 	QNetworkReply * createRequest(Operation op, const QNetworkRequest & req, QIODevice * outgoingData = 0);
 signals:
-	void debug(const QString & text);
-	void info(const QString & text);
 	void warning(const QString & text);
 	void error(const QString & text);
 };
@@ -76,7 +74,6 @@ public:
 	virtual bool javaScriptConfirm(QWebFrame * frame, const QString & msg);
 	virtual bool javaScriptPrompt(QWebFrame * frame, const QString & msg, const QString & defaultValue, QString * result);
 	virtual void javaScriptConsoleMessage(const QString & message, int lineNumber, const QString & sourceID);
-	virtual QString overrideMediaType() const;
 public slots:
 	bool shouldInterruptJavaScript();
 };
@@ -88,7 +85,6 @@ private:
 	QUrl url;
 	int loginTry;
 	int progress;
-	int windowStatusCounter;
 	bool finished;
 	bool signalPrint;
 	MultiPageLoaderPrivate & multiPageLoader;
@@ -107,8 +103,6 @@ public slots:
 	void printRequested(QWebFrame * frame);
 	void loadDone();
 	void handleAuthenticationRequired(QNetworkReply *reply, QAuthenticator *authenticator);
-	void debug(const QString & str);
-	void info(const QString & str);
 	void warning(const QString & str);
 	void error(const QString & str);
 	void sslErrors(QNetworkReply *reply, const QList<QSslError> &);

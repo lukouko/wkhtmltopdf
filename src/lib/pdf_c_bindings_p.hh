@@ -32,8 +32,6 @@
 class DLL_LOCAL MyPdfConverter: public QObject {
     Q_OBJECT
 public:
-	wkhtmltopdf_str_callback debug_cb;
-	wkhtmltopdf_str_callback info_cb;
 	wkhtmltopdf_str_callback warning_cb;
 	wkhtmltopdf_str_callback error_cb;
 	wkhtmltopdf_void_callback phase_changed;
@@ -49,8 +47,6 @@ public:
 	MyPdfConverter(wkhtmltopdf::settings::PdfGlobal * gs);
 	~MyPdfConverter();
 public slots:
-    void debug(const QString & message);
-    void info(const QString & message);
     void warning(const QString & message);
     void error(const QString & message);
     void phaseChanged();

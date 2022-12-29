@@ -134,10 +134,8 @@ please stop asking about that 🙏
 ## Recommendations
 
 * **Do not use wkhtmltopdf with any untrusted HTML** -- be sure to
-  sanitize any user-supplied HTML/JS, otherwise it can lead to
-  complete takeover of the server it is running on! Please consider
-  using a Mandatory Access Control system like AppArmor or SELinux,
-  see [recommended AppArmor policy](apparmor.html).
+sanitize any user-supplied HTML/JS, otherwise it can lead to
+complete takeover of the server it is running on!
 * If you're using it for report generation (i.e. with HTML you control),
   also consider using [WeasyPrint] or the [commercial tool Prince] --
   note that I'm not affiliated with either project, and do your diligence.
@@ -169,7 +167,7 @@ please stop asking about that 🙏
 [annulen]:                    https://github.com/annulen
 [qtwebkit-dev-wip]:           https://github.com/qtwebkit/qtwebkit
 [the future of Qt]:           https://lwn.net/Articles/817129/
-[puppeteer page.pdf]:         https://github.com/puppeteer/puppeteer/blob/v4.0.0/docs/api.md#pagepdfoptions
+[puppeteer page.pdf]:         https://github.com/puppeteer/puppeteer/blob/master/docs/api.md#pagepdfoptions
 [maintainer stepping down]:   https://groups.google.com/forum/m/#!topic/phantomjs/9aI5d-LDuNE
 [submitted PRs]:              https://github.com/wkhtmltopdf/wkhtmltopdf/pulls
 [rebaselining the patches]:   https://github.com/wkhtmltopdf/wkhtmltopdf/issues/3217

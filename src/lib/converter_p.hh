@@ -57,8 +57,6 @@ public slots:
 	bool convert();
 	void forwardError(QString error);
 	void forwardWarning(QString warning);
-	void forwardInfo(QString info);
-	void forwardDebug(QString debug);
 private:
   friend class Converter;
 };

@@ -49,6 +49,8 @@
  * - \b web.enableIntelligentShrinking Should we enable intelligent shrinkng to fit more content
  *      on one page? Must be either "true" or "false". Has no effect for wkhtmltoimage.
  * - \b web.minimumFontSize The minimum font size allowed. E.g. "9"
+ * - \b web.printMediaType Should the content be printed using the print media type instead
+ *      of the screen media type. Must be either "true" or "false". Has no effect for wkhtmltoimage.
  * - \b web.defaultEncoding What encoding should we guess content is using if they do not
  *      specify it properly? E.g. "utf-8"
  * - \b web.userStyleSheet Url er path to a user specified style sheet.
@@ -71,8 +73,7 @@
  * - \b load.blockLocalFileAccess Disallow local and piped files to access other local files. Must
  *      be either "true" or "false".
  * - \b load.stopSlowScript Stop slow running javascript. Must be either "true" or "false".
- * - \b load.debugJavascript Forward javascript console messages to the info callback.
- *      Must be either "true" or "false".
+ * - \b load.debugJavascript Forward javascript warnings and errors to the warning callback.
  *      Must be either "true" or "false".
  * - \b load.loadErrorHandling How should we handle obejcts that fail to load. Must be one of:
  *      - "abort" Abort the conversion process
@@ -80,8 +81,6 @@
  *      - "ignore" Try to add the object to the final output.
  * - \b load.proxy String describing what proxy to use when loading the object.
  * - \b load.runScript TODO
- * - \b load.printMediaType Should the content be printed using the print media type instead
- *      of the screen media type. Must be either "true" or "false". Has no effect for wkhtmltoimage.
  *
  * \section pageHeaderFooter Header and footer settings
  * The same settings can be applied for headers and footers, here there are explained in
@@ -173,12 +172,12 @@
 
 /**
  * \typedef wkhtmltopdf_str_callback
- * \brief Function pointer type used for the error, warning, info and debug callbacks
+ * \brief Function pointer type used for the error and warning callbacks
  *
  * \param converter The converter that issued the callback
- * \param str A utf8 encoded string containing the error, warning, info or debug message.
+ * \param str A utf8 encoded string containing the error or warning message.
  *
- * \sa wkhtmltopdf_set_error_callback, wkhtmltopdf_set_warning_callback, wkhtmltopdf_set_info_callback, wkhtmltopdf_set_debug_callback
+ * \sa wkhtmltopdf_set_error_callback, wkhtmltopdf_set_warning_callback
  */
 
 /**
@@ -209,14 +208,6 @@ using namespace wkhtmltopdf;
 QApplication * a = 0;
 int usage = 0;
 
-void MyPdfConverter::debug(const QString & message) {
-	if (debug_cb && globalSettings->logLevel > settings::Info) (debug_cb)(reinterpret_cast<wkhtmltopdf_converter*>(this), message.toUtf8().constData());
-}
-
-void MyPdfConverter::info(const QString & message) {
-	if (info_cb && globalSettings->logLevel > settings::Warn) (info_cb)(reinterpret_cast<wkhtmltopdf_converter*>(this), message.toUtf8().constData());
-}
-
 void MyPdfConverter::warning(const QString & message) {
 	if (warning_cb && globalSettings->logLevel > settings::Error) (warning_cb)(reinterpret_cast<wkhtmltopdf_converter*>(this), message.toUtf8().constData());
 }
@@ -238,11 +229,9 @@ void MyPdfConverter::finished(bool ok) {
 }
 
 MyPdfConverter::MyPdfConverter(settings::PdfGlobal * gs):
-	debug_cb(0), info_cb(0), warning_cb(0), error_cb(0), phase_changed(0), progress_changed(0), finished_cb(0),
+	warning_cb(0), error_cb(0), phase_changed(0), progress_changed(0), finished_cb(0),
 	converter(*gs), globalSettings(gs) {
 
-    connect(&converter, SIGNAL(debug(const QString &)), this, SLOT(debug(const QString &)));
-    connect(&converter, SIGNAL(info(const QString &)), this, SLOT(info(const QString &)));
     connect(&converter, SIGNAL(warning(const QString &)), this, SLOT(warning(const QString &)));
 	connect(&converter, SIGNAL(error(const QString &)), this, SLOT(error(const QString &)));
 	connect(&converter, SIGNAL(phaseChanged()), this, SLOT(phaseChanged()));
@@ -434,9 +423,6 @@ CAPI(void) wkhtmltopdf_destroy_object_settings(wkhtmltopdf_object_settings * obj
  * \returns 1 if the setting was updated successfully and 0 otherwise.
  */
 CAPI(int) wkhtmltopdf_set_object_setting(wkhtmltopdf_object_settings * settings, const char * name, const char * value) {
-	if (!strcmp(name, "web.printMediaType")) {
-		name = "load.printMediaType";
-	}
 	return reinterpret_cast<settings::PdfObject *>(settings)->set(name, QString::fromUtf8(value));
 }
 
@@ -484,28 +470,6 @@ CAPI(wkhtmltopdf_converter *) wkhtmltopdf_create_converter(wkhtmltopdf_global_se
  */
 CAPI(void) wkhtmltopdf_destroy_converter(wkhtmltopdf_converter * converter) {
 	reinterpret_cast<MyPdfConverter *>(converter)->deleteLater();
-}
-
-/**
- * \brief Set the function that should be called when an debug message is issued during conversion
- *
- * \param converter The converter object on which debug messages we want the callback to be called
- * \param cb The function to call when a debug message is issued
- *
- */
-CAPI(void) wkhtmltopdf_set_debug_callback(wkhtmltopdf_converter * converter, wkhtmltopdf_str_callback cb) {
-	reinterpret_cast<MyPdfConverter *>(converter)->debug_cb = cb;
-}
-
-/**
- * \brief Set the function that should be called when an info message is issued during conversion
- *
- * \param converter The converter object on which info messages we want the callback to be called
- * \param cb The function to call when a info message is issued
- *
- */
-CAPI(void) wkhtmltopdf_set_info_callback(wkhtmltopdf_converter * converter, wkhtmltopdf_str_callback cb) {
-	reinterpret_cast<MyPdfConverter *>(converter)->info_cb = cb;
 }
 
 /**
@@ -577,7 +541,7 @@ CAPI(void) wkhtmltopdf_set_finished_callback(wkhtmltopdf_converter * converter, 
 /**
  * \brief Convert the input objects into a pdf document
  *
- * This is the main method for the conversion process, during conversion progress debug, information,
+ * This is the main method for the conversion process, during conversion progress information
  * warning, and errors are reported using the supplied call backs. Once the conversion is done
  * the output pdf (or ps) file will be placed at the location of the "out" setting supplied in
  * the global settings object during construction of the converter. If this setting is not supplied

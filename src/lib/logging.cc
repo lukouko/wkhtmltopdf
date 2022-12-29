@@ -32,7 +32,6 @@ QMap<QString, LogLevel> logLevelMap() {
 	res["error"] = Error;
 	res["warn"] = Warn;
 	res["info"] = Info;
-	res["debug"] = Debug;
 	return res;
 }
 

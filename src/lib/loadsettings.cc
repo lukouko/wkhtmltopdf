@@ -32,7 +32,6 @@ namespace settings {
 QList<QString> LoadPage::mediaFilesExtensions = QList<QString> ()
 		<< "css"
 		<< "js"
-		<< "svg"
 		<< "png"
 		<< "jpg"
 		<< "jpeg"
@@ -147,7 +146,6 @@ LoadPage::LoadPage():
 	loadErrorHandling(abort),
 	mediaLoadErrorHandling(ignore),
 	cacheDir(""),
-	printMediaType(false),
 	proxyHostNameLookup(false) {};
 
 }

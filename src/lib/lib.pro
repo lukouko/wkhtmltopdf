@@ -33,10 +33,6 @@ INSTALLS += headers
 
 windows: CONFIG += skip_target_version_ext
 
-macx {
-    QMAKE_LFLAGS_SONAME = -Wl,-install_name,$$INSTALLBASE/lib/
-}
-
 TARGET=wkhtmltox
 INSTALLS += target
 

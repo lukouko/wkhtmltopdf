@@ -177,7 +177,7 @@ PdfCommandLineParser::PdfCommandLineParser(PdfGlobal & s, QList<PdfObject> & ps)
 	qthack(false);
 
 	addarg("quiet", 'q', "Be less verbose, maintained for backwards compatibility; Same as using --log-level none", new ConstSetter<LogLevel>(s.logLevel, None));
-	addarg("log-level", 0, "Set log level to: none, error, warn, info or debug", new LogLevelSetter(s.logLevel, "level"));
+	addarg("log-level", 0, "Set log level to: none, error, warn or info", new LogLevelSetter(s.logLevel, "level"));
 
 	addarg("no-collate", 0, "Do not collate when printing multiple copies", new ConstSetter<bool>(s.collate, false));
 	addarg("collate", 0, "Collate when printing multiple copies", new ConstSetter<bool>(s.collate, true));
@@ -228,7 +228,7 @@ PdfCommandLineParser::PdfCommandLineParser(PdfGlobal & s, QList<PdfObject> & ps)
 
 	section("Page Options");
 	mode(page);
- 	addarg("default-header",0,"Add a default header, with the name of the page to the left, and the page number to the right, this is short for: --header-left '[webpage]' --header-right '[page]/[toPage]' --margin-top 2cm --header-line", new Caller<DefaultHeaderFunc>());
+ 	addarg("default-header",0,"Add a default header, with the name of the page to the left, and the page number to the right, this is short for: --header-left='[webpage]' --header-right='[page]/[toPage]' --top 2cm --header-line", new Caller<DefaultHeaderFunc>());
 
 	addarg("viewport-size", 0, "Set viewport size if you have custom scrollbars or css attribute overflow to emulate window size",new QStrSetter(s.viewportSize,""));
 	addWebArgs(od.web);
@@ -247,8 +247,8 @@ PdfCommandLineParser::PdfCommandLineParser(PdfGlobal & s, QList<PdfObject> & ps)
 
 	extended(false);
  	qthack(true);
-	addarg("print-media-type",0,"Use print media-type instead of screen", new ConstSetter<bool>(od.load.printMediaType,true));
-	addarg("no-print-media-type",0,"Do not use print media-type instead of screen", new ConstSetter<bool>(od.load.printMediaType, false));
+	addarg("print-media-type",0,"Use print media-type instead of screen", new ConstSetter<bool>(od.web.printMediaType,true));
+	addarg("no-print-media-type",0,"Do not use print media-type instead of screen", new ConstSetter<bool>(od.web.printMediaType, false));
 
  	extended(true);
  	qthack(true);
