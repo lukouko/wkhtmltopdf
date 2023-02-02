@@ -195,6 +195,15 @@ bool Outline::replaceWebPage(int document,
 		headings[ qMakePair(location.first, qMakePair(location.second.y(), location.second.x()) ) ] = e;
 	}
 
+	// START CUSTOM SMOKEBALL CODE BLOCK
+	QWebElementCollection sbDataElements = frame->findAllElements("[pdf-hf-data]");
+  foreach (const QWebElement & e, sbDataElements) {
+    QPair<int, QRectF> dataElementLocation = wp.elementLocation(e);
+    QString dataAttributeValue = e.attribute("pdf-hf-data").trimmed();
+    d->hfDataMap.insert(dataElementLocation.first, dataAttributeValue);
+  }
+	// END CUSTOM SMOKEBALL CODE BLOCK
+
 	//This heuristic is a little strange, it tries to create a real tree,
 	//even though someone puts a h5 below a h1 or stuff like that
 	//The way this is handled is having a level stack, indicating what h-tags
@@ -292,6 +301,17 @@ void OutlinePrivate::buildHFCache(OutlineItem * i, int level) {
   \param parms The structure to fill
  */
 void Outline::fillHeaderFooterParms(int page, QHash<QString, QString> & parms, const settings::PdfObject & ps) {
+	// START CUSTOM SMOKEBALL CODE BLOCK
+	if (d->hfDataMap.size() != d->pageCount) {
+    int pageCount = d->pageCount + 1;
+    QString currentData;
+    for (int i = 1; i < pageCount; ++i) {
+      currentData = (d->hfDataMap.contains(i) ? d->hfDataMap.value(i) : currentData);
+      d->hfDataMap[i] = currentData;
+    }
+  }
+	// END CUSTOM SMOKEBALL CODE BLOCK
+
 	//Build hfcache
 	if (d->hfCache.size() == 0) {
 		for (int i=0; i < 3; ++i) {
@@ -318,6 +338,10 @@ void Outline::fillHeaderFooterParms(int page, QHash<QString, QString> & parms, c
 	parms["section" ] = d->hfCache[0][page]?d->hfCache[0][page]->value:QString("");
 	parms["subsection" ] = d->hfCache[1][page]?d->hfCache[1][page]->value:QString("");
 	parms["subsubsection" ] = d->hfCache[2][page]?d->hfCache[2][page]->value:QString("");
+
+	// START CUSTOM SMOKEBALL CODE BLOCK
+	parms["pdf-hf-data" ] = d->hfDataMap.value(page);
+	// END CUSTOM SMOKEBALL CODE BLOCK
 }
 
 /*!

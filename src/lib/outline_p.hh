@@ -59,6 +59,11 @@ public:
 
 	QList< QList< OutlineItem *> > hfCache;
 
+	// START CUSTOM SMOKEBALL CODE BLOCK
+	typedef QMap<int, QString> PageToHfDataMap;
+  PageToHfDataMap hfDataMap;
+	// END CUSTOM SMOKEBALL CODE BLOCK
+
 	OutlinePrivate(const settings::PdfGlobal & settings);
 	~OutlinePrivate();
 	void buildPrefixSum();
